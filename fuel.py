@@ -6,9 +6,30 @@ import subprocess
 import optparse
 import json
 from collections import defaultdict
+from ConfigParser import ConfigParser
 
 fuel = "/usr/bin/fuel"
 fuel_cmd = "{0} node --json".format(fuel)
+
+inventory_path = os.path.dirname(os.path.realpath(__file__))
+inventory_ini = inventory_path + os.path.sep + 'fuel.ini'
+inventory_cfg = {
+    'skip_deleting' : True,
+    'skip_offline'  : True,
+}
+
+def _read_config():
+    if not os.path.exists(inventory_ini):
+        return
+
+    c = ConfigParser()
+    c.read(inventory_ini)
+
+    if not c.has_section('fuel'):
+        return
+    for option in ('skip_deleting', 'skip_offline'):
+        if c.has_option('fuel', option):
+            inventory_cfg[option] = c.getboolean('fuel', option)
 
 def _listnodes():
     p = subprocess.Popen(fuel_cmd.split(), stdout=subprocess.PIPE).stdout
@@ -20,6 +41,10 @@ def fuel_inventory():
         'hostvars' : {},
     }
     for node in _listnodes():
+        # skip deleting and offline nodes
+        if node['pending_deletion'] and inventory_cfg['skip_deleting']: continue
+        if not node['online'] and inventory_cfg['skip_offline']: continue
+
         hostname = node['name']
         inventory[node['roles']].append(hostname)
         nodemeta = {
