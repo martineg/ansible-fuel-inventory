@@ -14,8 +14,8 @@ fuel_cmd = "{0} node --json".format(fuel)
 inventory_path = os.path.dirname(os.path.realpath(__file__))
 inventory_ini = inventory_path + os.path.sep + 'fuel.ini'
 inventory_cfg = {
-    'skip_deleting' : True,
-    'skip_offline'  : True,
+    'skip_deleting' : False,
+    'skip_offline'  : False,
 }
 
 def _read_config():
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     cli_parser.add_option('--list', action='store_true')
     cli_parser.add_option('--host', action='store', type='string')
     (options, args) = cli_parser.parse_args()
-
+    _read_config()
     inventory = fuel_inventory()
     if options.list:
         data = json.dumps(inventory)
