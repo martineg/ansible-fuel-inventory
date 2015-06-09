@@ -14,9 +14,10 @@ fuel_cmd = "{0} node --json".format(fuel)
 inventory_path = os.path.dirname(os.path.realpath(__file__))
 inventory_ini = inventory_path + os.path.sep + 'fuel.ini'
 inventory_cfg = {
-    'skip_deleting' : False,
-    'skip_offline'  : False,
+    'skip_deleting': False,
+    'skip_offline': False,
 }
+
 
 def _read_config():
     if not os.path.exists(inventory_ini):
@@ -31,31 +32,36 @@ def _read_config():
         if c.has_option('fuel', option):
             inventory_cfg[option] = c.getboolean('fuel', option)
 
+
 def _listnodes():
     p = subprocess.Popen(fuel_cmd.split(), stdout=subprocess.PIPE).stdout
     return json.load(p)
 
+
 def fuel_inventory():
     inventory = defaultdict(list)
     inventory['_meta'] = {
-        'hostvars' : {},
+        'hostvars': {},
     }
     for node in _listnodes():
         # skip deleting and offline nodes
-        if node['pending_deletion'] and inventory_cfg['skip_deleting']: continue
-        if not node['online'] and inventory_cfg['skip_offline']: continue
+        if node['pending_deletion'] and inventory_cfg['skip_deleting']:
+            continue
+        if not node['online'] and inventory_cfg['skip_offline']:
+            continue
 
         hostname = node['name']
-        [ inventory[role].append(hostname) for role in node['roles'].split(",") ]
+        [inventory[role].append(hostname) for role in node['roles'].split(",")]
         nodemeta = {
-            'online' : node['online'],
-            'os_platform' : node['os_platform'],
-            'status' : node['status'],
-            'ip' : node['ip'],
-            'mac' : node['mac'],
+            'online': node['online'],
+            'os_platform': node['os_platform'],
+            'status': node['status'],
+            'ip': node['ip'],
+            'mac': node['mac'],
         }
         inventory['_meta']['hostvars'][hostname] = nodemeta
     return inventory
+
 
 if __name__ == '__main__':
     if not os.path.exists(fuel):
