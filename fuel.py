@@ -46,7 +46,7 @@ def fuel_inventory():
         if not node['online'] and inventory_cfg['skip_offline']: continue
 
         hostname = node['name']
-        inventory[node['roles']].append(hostname)
+        [ inventory[role].append(hostname) for role in node['roles'].split(",") ]
         nodemeta = {
             'online' : node['online'],
             'os_platform' : node['os_platform'],
