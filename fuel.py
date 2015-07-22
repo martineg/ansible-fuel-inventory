@@ -16,6 +16,7 @@ inventory_ini = inventory_path + os.path.sep + 'fuel.ini'
 inventory_cfg = {
     'skip_deleting': False,
     'skip_offline': False,
+    'skip_deploying': False,
 }
 
 
@@ -28,7 +29,7 @@ def _read_config():
 
     if not c.has_section('fuel'):
         return
-    for option in ('skip_deleting', 'skip_offline'):
+    for option in ('skip_deleting', 'skip_offline', 'skip_deploying'):
         if c.has_option('fuel', option):
             inventory_cfg[option] = c.getboolean('fuel', option)
 
@@ -48,6 +49,8 @@ def fuel_inventory():
         if node['pending_deletion'] and inventory_cfg['skip_deleting']:
             continue
         if not node['online'] and inventory_cfg['skip_offline']:
+            continue
+        if node['status'] == 'deploying' and inventory_cfg['skip_deploying']:
             continue
 
         hostname = node['name']
