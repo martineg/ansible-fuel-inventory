@@ -45,12 +45,14 @@ def fuel_inventory():
         'hostvars': {},
     }
     for node in _listnodes():
-        # skip deleting and offline nodes
+        # skip deleting, offline, deploying and discovering/unprovisioned nodes
         if node['pending_deletion'] and inventory_cfg['skip_deleting']:
             continue
         if not node['online'] and inventory_cfg['skip_offline']:
             continue
         if node['status'] == 'deploying' and inventory_cfg['skip_deploying']:
+            continue
+        if node['status'] == 'discover':
             continue
 
         hostname = node['name']
