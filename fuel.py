@@ -57,7 +57,7 @@ def fuel_inventory():
 
         hostname = node['name']
         cluster_id = node['cluster']
-        [inventory[role].append(hostname) for role in node['roles'].split(",")]
+        [inventory[role.strip()].append(hostname) for role in node['roles'].split(",")]
         inventory["cluster-{0}".format(cluster_id)].append(hostname)
         nodemeta = {
             'online': node['online'],
