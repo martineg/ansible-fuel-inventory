@@ -57,8 +57,10 @@ def fuel_inventory():
 
         hostname = node['name']
         cluster_id = node['cluster']
+        hw_vendor = node['meta']['system']['manufacturer'].lower()
         [inventory[role].append(hostname) for role in node['roles'].split(",")]
         inventory["cluster-{0}".format(cluster_id)].append(hostname)
+        inventory["hw-{0}-servers".format(hw_vendor)].append(hostname)
         nodemeta = {
             'online': node['online'],
             'os_platform': node['os_platform'],
