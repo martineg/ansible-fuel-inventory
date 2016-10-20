@@ -71,7 +71,6 @@ def fuel_inventory():
             'ansible_ssh_host': node['ip']
         }
         inventory["node-{}".format(node['id'])].append(hostname)
-        inventory["all"].append("node-{}".format(node['id']))
         inventory['_meta']['hostvars'][hostname] = nodemeta
     return inventory
 
